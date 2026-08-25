@@ -1,0 +1,21 @@
+<section class="hero" data-leftover="<%= summary.leftover_cents %>" data-income="<%= summary.income_home_cents %>" data-subscriptions-total="<%= summary.subscriptions_home_cents %>" data-expenses-total="<%= summary.expenses_home_cents %>">
+  <p class="hero-kicker"><%= summary.leftover_cents.negative? ? t("app.leftover_negative") : t("app.leftover") %></p>
+  <p class="hero-figure<%= " is-negative" if summary.leftover_cents.negative? %>"><%= money(summary.leftover_cents) %></p>
+  <% if summary.salary_missing? %>
+    <p class="hero-hint"><%= t("app.salary_hint") %></p>
+  <% end %>
+  <dl class="hero-lines">
+    <div>
+      <dt><%= t("app.salary") %></dt>
+      <dd><%= money(summary.income_home_cents) %></dd>
+    </div>
+    <div>
+      <dt>− <%= t("app.subscriptions") %></dt>
+      <dd><%= money(summary.subscriptions_home_cents) %></dd>
+    </div>
+    <div>
+      <dt>− <%= t("app.expenses") %></dt>
+      <dd><%= money(summary.expenses_home_cents) %></dd>
+    </div>
+  </dl>
+</section>

@@ -1,0 +1,169 @@
+<% home = current_user.home_currency %>
+
+<dialog class="confirm-dialog form-dialog" data-composer-target="expenseBox" data-action="click->composer#backdrop">
+  <p class="dialog-heading" data-composer-target="expenseHeading"><%= t("app.new_expense") %></p>
+  <%= form_with url: expenses_path, class: "auth-form", data: { composer_target: "expenseForm" } do %>
+    <input type="hidden" name="_method" value="post" data-composer-target="expenseMethod">
+    <%= hidden_field_tag :year, summary.year %>
+    <%= hidden_field_tag :month, summary.month %>
+    <label><%= t("app.title") %>
+      <input type="text" name="expense[title]" required maxlength="200" data-composer-target="expenseTitle">
+    </label>
+    <div class="time-row">
+      <label><%= t("app.amount") %>
+        <input type="text" name="expense[amount]" required inputmode="decimal" autocomplete="off" data-composer-target="expenseAmount">
+      </label>
+      <label><%= t("app.currency") %>
+        <select name="expense[currency]" data-composer-target="expenseCurrency">
+          <% currency_options.each do |label, code| %>
+            <option value="<%= code %>" <%= "selected" if code == home %>><%= code %></option>
+          <% end %>
+        </select>
+      </label>
+    </div>
+    <div class="time-row">
+      <label><%= t("app.date") %>
+        <input type="date" name="expense[spent_on]" required data-composer-target="expenseSpentOn">
+      </label>
+      <label><%= t("app.category") %>
+        <select name="expense[category]" data-composer-target="expenseCategory">
+          <% category_options.each do |label, key| %>
+            <option value="<%= key %>"><%= label %></option>
+          <% end %>
+        </select>
+      </label>
+    </div>
+    <label><%= t("app.notes") %>
+      <textarea name="expense[notes]" rows="2" data-composer-target="expenseNotes"></textarea>
+    </label>
+    <div class="confirm-actions">
+      <button type="button" class="btn-dialog" data-action="composer#closeExpense"><%= t("app.cancel") %></button>
+      <button type="submit" class="btn-dialog primary"><%= t("app.save") %></button>
+    </div>
+  <% end %>
+  <button type="button" class="btn-dialog danger dialog-delete" hidden data-composer-target="expenseDelete" data-action="confirm#open" data-message="<%= t("js.delete_expense_confirm") %>"><%= t("app.delete") %></button>
+</dialog>
+
+<dialog class="confirm-dialog form-dialog" data-composer-target="payBox" data-action="click->composer#backdrop">
+  <p class="dialog-heading" data-composer-target="payHeading"><%= t("app.new_payment_day") %></p>
+  <%= form_with url: payment_days_path, class: "auth-form", data: { composer_target: "payForm" } do %>
+    <input type="hidden" name="_method" value="post" data-composer-target="payMethod">
+    <%= hidden_field_tag :year, summary.year %>
+    <%= hidden_field_tag :month, summary.month %>
+    <label><%= t("app.title") %>
+      <input type="text" name="payment_day[title]" required maxlength="200" data-composer-target="payTitle" placeholder="<%= t("app.payment_day_placeholder") %>">
+    </label>
+    <label><%= t("app.due_day") %>
+      <select name="payment_day[due_day]" required data-composer-target="payDueDay">
+        <% (1..31).each do |day| %>
+          <option value="<%= day %>"><%= t("app.day_n", day: day) %></option>
+        <% end %>
+      </select>
+      <span class="field-hint"><%= t("app.payment_day_hint") %></span>
+    </label>
+    <label><%= t("app.notes") %>
+      <textarea name="payment_day[notes]" rows="2" data-composer-target="payNotes"></textarea>
+    </label>
+    <div class="confirm-actions">
+      <button type="button" class="btn-dialog" data-action="composer#closePay"><%= t("app.cancel") %></button>
+      <button type="submit" class="btn-dialog primary"><%= t("app.save") %></button>
+    </div>
+  <% end %>
+  <button type="button" class="btn-dialog danger dialog-delete" hidden data-composer-target="payDelete" data-action="confirm#open" data-message="<%= t("js.delete_payment_day_confirm") %>"><%= t("app.delete") %></button>
+</dialog>
+
+<dialog class="confirm-dialog form-dialog" data-composer-target="subBox" data-action="click->composer#backdrop">
+  <p class="dialog-heading" data-composer-target="subHeading"><%= t("app.new_subscription") %></p>
+  <%= form_with url: subscriptions_path, class: "auth-form", data: { composer_target: "subForm" } do %>
+    <input type="hidden" name="_method" value="post" data-composer-target="subMethod">
+    <%= hidden_field_tag :year, summary.year %>
+    <%= hidden_field_tag :month, summary.month %>
+    <label><%= t("app.title") %>
+      <input type="text" name="subscription[title]" required maxlength="200" data-composer-target="subTitle">
+    </label>
+    <div class="time-row">
+      <label><%= t("app.amount") %>
+        <input type="text" name="subscription[amount]" required inputmode="decimal" autocomplete="off" data-composer-target="subAmount">
+      </label>
+      <label><%= t("app.currency") %>
+        <select name="subscription[currency]" data-composer-target="subCurrency">
+          <% currency_options.each do |label, code| %>
+            <option value="<%= code %>" <%= "selected" if code == home %>><%= code %></option>
+          <% end %>
+        </select>
+      </label>
+    </div>
+    <label><%= t("app.interval") %>
+      <select name="subscription[interval]" data-composer-target="subInterval" data-action="composer#toggleInterval">
+        <option value="monthly"><%= t("app.interval_monthly") %></option>
+        <option value="yearly"><%= t("app.interval_yearly") %></option>
+      </select>
+    </label>
+    <label data-composer-target="subBillingWrap" hidden>
+      <%= t("app.billing_month") %>
+      <select name="subscription[billing_month]" data-composer-target="subBillingMonth">
+        <% (1..12).each do |month| %>
+          <option value="<%= month %>"><%= t("date.month_names")[month] %></option>
+        <% end %>
+      </select>
+    </label>
+    <label><%= t("app.due_day") %>
+      <input type="number" name="subscription[due_day]" min="1" max="31" data-composer-target="subDueDay">
+    </label>
+    <label><%= t("app.notes") %>
+      <textarea name="subscription[notes]" rows="2" data-composer-target="subNotes"></textarea>
+    </label>
+    <div class="confirm-actions">
+      <button type="button" class="btn-dialog" data-action="composer#closeSub"><%= t("app.cancel") %></button>
+      <button type="submit" class="btn-dialog primary"><%= t("app.save") %></button>
+    </div>
+  <% end %>
+  <button type="button" class="btn-dialog danger dialog-delete" hidden data-composer-target="subDelete" data-action="confirm#open" data-message="<%= t("js.delete_subscription_confirm") %>"><%= t("app.delete") %></button>
+</dialog>
+
+<dialog class="confirm-dialog form-dialog" data-settings-target="box" data-action="click->settings#backdrop">
+  <p class="dialog-heading"><%= t("app.settings") %></p>
+  <p class="lede"><%= t("app.settings_lede") %></p>
+  <%= form_with url: settings_path, method: :patch, class: "auth-form" do %>
+    <%= hidden_field_tag :year, summary.year %>
+    <%= hidden_field_tag :month, summary.month %>
+    <label><%= t("app.salary") %>
+      <input type="text" name="user[monthly_income]" value="<%= amount_input(current_user.monthly_income_cents) %>" inputmode="decimal" autocomplete="off">
+    </label>
+    <div class="time-row">
+      <label><%= t("app.income_currency") %>
+        <select name="user[income_currency]">
+          <% currency_options.each do |label, code| %>
+            <option value="<%= code %>" <%= "selected" if code == current_user.income_currency %>><%= code %></option>
+          <% end %>
+        </select>
+      </label>
+      <label><%= t("app.home_currency") %>
+        <select name="user[home_currency]">
+          <% currency_options.each do |label, code| %>
+            <option value="<%= code %>" <%= "selected" if code == home %>><%= code %></option>
+          <% end %>
+        </select>
+      </label>
+    </div>
+    <p class="field-hint"><%= t("app.fx_lede") %></p>
+    <% Money::CURRENCIES.each do |code| %>
+      <% next if code == home %>
+      <label><%= t("app.fx_rate", code: code) %> = <%= home %>
+        <input type="text" name="fx[<%= code %>]" value="<%= current_user.rate_for(code) %>" inputmode="decimal" autocomplete="off" placeholder="5.45">
+      </label>
+    <% end %>
+    <div class="confirm-actions">
+      <button type="button" class="btn-dialog" data-action="settings#close"><%= t("app.cancel") %></button>
+      <button type="submit" class="btn-dialog primary"><%= t("app.save") %></button>
+    </div>
+  <% end %>
+</dialog>
+
+<dialog class="confirm-dialog" data-confirm-target="box" data-action="click->confirm#backdrop">
+  <p data-confirm-target="message"><%= t("js.delete_expense_confirm") %></p>
+  <div class="confirm-actions">
+    <button type="button" class="btn-dialog" data-action="confirm#close"><%= t("app.cancel") %></button>
+    <%= link_to t("app.delete"), "#", class: "btn-dialog danger", data: { confirm_target: "destroy", turbo_method: :delete } %>
+  </div>
+</dialog>

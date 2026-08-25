@@ -1,0 +1,203 @@
+en:
+  pwa:
+    description: "A quiet personal spend tracker as a PWA."
+  titles:
+    app: "KuraSpend"
+    login: "Sign in · KuraSpend"
+    signup: "Create account · KuraSpend"
+    password: "Change password · KuraSpend"
+    lock: "Unlock · KuraSpend"
+  auth:
+    sign_in: "Sign in"
+    sign_in_lede: "Your money lives on this server. Sign in to open it."
+    email: "Email"
+    password: "Password"
+    confirm_password: "Confirm password"
+    current_password: "Current password"
+    new_password: "New password"
+    confirm_new_password: "Confirm new password"
+    change_password: "Change password"
+    change_password_lede: "The new password is used to sign in and to unlock the app."
+    password_changed: "Password changed."
+    no_account: "No account?"
+    create_one: "Create one"
+    create_account: "Create account"
+    signup_lede: "There is no password recovery. If you lose it, ask whoever runs the server."
+    have_account: "Already have an account?"
+    theme: "Theme"
+    too_many: "Too many attempts. Wait a moment."
+    signup_closed: "New accounts are turned off on this server."
+  app:
+    unlock: "Unlock"
+    unlock_lede: "Signed in as %{email}. Enter your password to show your money."
+    lock: "Lock"
+    auto_lock_on: "Turn on auto lock"
+    auto_lock_off: "Turn off auto lock"
+    sign_out: "Sign out"
+    cancel: "Cancel"
+    delete: "Delete"
+    save: "Save"
+    more: "More"
+    today: "This month"
+    previous_month: "Previous month"
+    next_month: "Next month"
+    new_item: "Add"
+    new_expense: "Expense"
+    new_payment_day: "Payment day"
+    new_subscription: "Subscription"
+    edit_expense: "Edit expense"
+    edit_payment_day: "Edit payment day"
+    edit_subscription: "Edit subscription"
+    leftover: "Left this month"
+    leftover_negative: "Over this month"
+    salary: "Salary"
+    subscriptions: "Subscriptions"
+    payment_days: "Payment days"
+    expenses: "Spent"
+    daily: "Daily"
+    title: "Title"
+    amount: "Amount"
+    notes: "Notes"
+    currency: "Currency"
+    category: "Category"
+    category_none: "No category"
+    date: "Date"
+    due_day: "Day of month"
+    due_on: "Due date"
+    day_n: "Day %{day}"
+    interval: "Repeats"
+    interval_monthly: "Every month"
+    interval_yearly: "Once a year"
+    billing_month: "Billing month"
+    payment_day_placeholder: "Water, electricity, card…"
+    payment_day_hint: "Every month. Log the amount as an expense when you pay."
+    due_today: "Due today"
+    due_passed: "Already passed this month"
+    due_on_day: "Every month on day %{day}"
+    active: "Active"
+    settings: "Salary & currencies"
+    settings_lede: "Leftover is salary minus this month's subscriptions and daily spend, converted with the rates below."
+    settings_saved: "Saved."
+    home_currency: "Show totals in"
+    income_currency: "Salary currency"
+    fx_lede: "One unit of that currency in your home currency. No live quotes."
+    fx_rate: "1 %{code}"
+    missing_rates: "Set a rate for %{codes} or those rows stay out of leftover."
+    salary_hint: "Set a salary in the menu to see what's left after subscriptions and spend."
+    empty_expenses: "No daily spend this month."
+    empty_payment_days: "No payment days yet. Water, electricity, card…"
+    empty_subscriptions: "No subscriptions yet."
+    export: "Export"
+    import: "Import"
+    import_done: "Imported %{count} items."
+    import_invalid: "That file is not a valid KuraSpend export."
+    offline: "You're offline. You can open months you've already viewed, but changes won't save."
+    invalid_month: "That month isn't valid."
+    add_expense: "Add expense"
+    add_payment_day: "Add day"
+    add_subscription: "Add subscription"
+    skipped: "needs a rate"
+    usual_amount: "Usual amount"
+  currencies:
+    BRL: "Brazilian real"
+    USD: "US dollar"
+    EUR: "Euro"
+  categories:
+    food: "Food"
+    transport: "Transport"
+    home: "Home"
+    health: "Health"
+    leisure: "Leisure"
+    other: "Other"
+  date:
+    formats:
+      month: "%B %Y"
+      day: "%A, %B %-d"
+    abbr_day_names: [Sun, Mon, Tue, Wed, Thu, Fri, Sat]
+    day_names: [Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday]
+    month_names: [~, January, February, March, April, May, June, July, August, September, October, November, December]
+    abbr_month_names: [~, Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec]
+  js:
+    invalid_credentials: "Invalid email or password."
+    wrong_password: "Wrong password."
+    theme_system: "Theme: system"
+    theme_light: "Theme: light"
+    theme_dark: "Theme: dark"
+    theme_switch: "click to switch"
+    delete_expense_confirm: "Delete this expense?"
+    delete_payment_day_confirm: "Delete this payment day?"
+    delete_subscription_confirm: "Delete this subscription?"
+  helpers:
+    submit:
+      expense:
+        create: "Add expense"
+        update: "Save"
+      payment_day:
+        create: "Add payment day"
+        update: "Save"
+      subscription:
+        create: "Add subscription"
+        update: "Save"
+  activerecord:
+    attributes:
+      user:
+        password: "Password"
+        password_confirmation: "Password confirmation"
+        home_currency: "Home currency"
+        monthly_income_cents: "Salary"
+        income_currency: "Salary currency"
+        fx: "Exchange rate"
+      expense:
+        title: "Title"
+        amount_cents: "Amount"
+        currency: "Currency"
+        spent_on: "Date"
+        category: "Category"
+        notes: "Notes"
+      payment_day:
+        title: "Title"
+        due_day: "Day of month"
+        notes: "Notes"
+      subscription:
+        title: "Title"
+        amount_cents: "Amount"
+        currency: "Currency"
+        interval: "Repeats"
+        due_day: "Due day"
+        billing_month: "Billing month"
+        notes: "Notes"
+    errors:
+      models:
+        user:
+          attributes:
+            password:
+              too_short: "is too short (minimum is %{count} characters)"
+              blank: "can't be blank"
+            password_confirmation:
+              confirmation: "doesn't match password"
+            fx:
+              invalid: "must be a positive number"
+        expense:
+          attributes:
+            title:
+              blank: "can't be blank"
+            amount_cents:
+              greater_than: "must be greater than 0"
+            base:
+              too_many: "Ten thousand expenses is enough."
+        payment_day:
+          attributes:
+            title:
+              blank: "can't be blank"
+            due_day:
+              blank: "can't be blank"
+            base:
+              too_many: "Two hundred payment days is enough."
+        subscription:
+          attributes:
+            title:
+              blank: "can't be blank"
+            amount_cents:
+              greater_than: "must be greater than 0"
+            base:
+              too_many: "Two hundred subscriptions is enough."

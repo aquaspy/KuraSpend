@@ -1,0 +1,34 @@
+<section class="panel">
+  <header class="panel-head">
+    <h2><%= t("app.subscriptions") %></h2>
+    <button type="button" class="text-btn" data-action="composer#newSubscription"><%= t("app.add_subscription") %></button>
+  </header>
+  <% if summary.subscription_rows.empty? %>
+    <p class="empty-day"><%= t("app.empty_subscriptions") %></p>
+  <% else %>
+    <ul class="day-list">
+      <% summary.subscription_rows.each do |line| %>
+        <li class="day-item<%= " is-skipped" if line.skipped %><%= " is-quiet" unless line.counts %>">
+          <button type="button" class="item-main"
+            data-action="composer#editSubscription"
+            data-id="<%= line.id %>"
+            data-title="<%= line.title %>"
+            data-amount="<%= amount_input(line.amount_cents) %>"
+            data-currency="<%= line.currency %>"
+            data-interval="<%= line.interval %>"
+            data-due-day="<%= line.due_day %>"
+            data-billing-month="<%= line.billing_month %>"
+            data-notes="<%= line.notes %>"
+            data-heading="<%= t("app.edit_subscription") %>">
+            <span class="item-kind"><%= line.title %></span>
+            <span class="item-note"><%= t("app.interval_#{line.interval}") %><% if line.due_day %> · <%= t("app.due_day") %> <%= line.due_day %><% end %></span>
+          </button>
+          <span class="row-amount"><%= line.skipped ? t("app.skipped") : money_pair(line) %></span>
+          <button type="button" class="item-del" data-action="confirm#open" data-url="<%= subscription_path(line.id) %>" data-message="<%= t("js.delete_subscription_confirm") %>" aria-label="<%= t("app.delete") %>">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

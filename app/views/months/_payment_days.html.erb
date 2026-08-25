@@ -1,0 +1,32 @@
+<section class="panel">
+  <header class="panel-head">
+    <h2><%= t("app.payment_days") %></h2>
+    <button type="button" class="text-btn" data-action="composer#newPaymentDay"><%= t("app.add_payment_day") %></button>
+  </header>
+  <% if summary.payment_days.empty? %>
+    <p class="empty-day"><%= t("app.empty_payment_days") %></p>
+  <% else %>
+    <ul class="day-list">
+      <% summary.payment_days.each do |line| %>
+        <li class="day-item<%= " is-today" if line.due_today %><%= " is-overdue" if line.overdue %>">
+          <button type="button" class="item-main"
+            data-action="composer#editPaymentDay"
+            data-id="<%= line.id %>"
+            data-title="<%= line.title %>"
+            data-due-day="<%= line.due_day %>"
+            data-notes="<%= line.notes %>"
+            data-heading="<%= t("app.edit_payment_day") %>">
+            <span class="item-kind"><%= line.title %></span>
+            <span class="item-note row-due">
+              <% if line.due_today %><%= t("app.due_today") %><% elsif line.overdue %><%= t("app.due_passed") %><% else %><%= t("app.due_on_day", day: line.due_on.day) %><% end %>
+            </span>
+          </button>
+          <span class="due-num"><%= line.due_on.day %></span>
+          <button type="button" class="item-del" data-action="confirm#open" data-url="<%= payment_day_path(line.id) %>" data-message="<%= t("js.delete_payment_day_confirm") %>" aria-label="<%= t("app.delete") %>">
+            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4.2 4.2 11.8 11.8M11.8 4.2 4.2 11.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          </button>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</section>

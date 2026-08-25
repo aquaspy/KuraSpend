@@ -1,0 +1,68 @@
+<% content_for :title, t("titles.app") %>
+
+<%= button_to "", lock_path, method: :post, id: "lock-now", class: "sr-only", tabindex: -1, form: { id: "lock-now-form" } %>
+<% if notice %><p class="flash flash-notice" role="status"><%= notice %></p><% end %>
+<% if alert %><p class="flash flash-alert" role="alert"><%= alert %></p><% end %>
+
+<div class="spend" data-controller="composer confirm menu lock offline settings" data-lock-enabled-value="<%= current_user.auto_lock? %>">
+  <p class="offline-banner" data-offline-target="banner" hidden><%= t("app.offline") %></p>
+  <% if @summary.missing_rate_currencies.any? %>
+    <p class="offline-banner fx-banner" role="status"><%= t("app.missing_rates", codes: @summary.missing_rate_currencies.join(", ")) %></p>
+  <% end %>
+
+  <header class="spend-top">
+    <%= render "shared/wordmark" %>
+    <button type="button" class="icon-btn spend-top-tool" data-action="theme#cycle" data-theme-button title="<%= t("auth.theme") %>" aria-label="<%= t("auth.theme") %>">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 3a5 5 0 0 0 0 10Z" fill="currentColor"/></svg>
+    </button>
+    <button type="button" class="icon-btn desktop-only" data-action="lock#lock" title="<%= t("app.lock") %>" aria-label="<%= t("app.lock") %>">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.4" y="7.2" width="9.2" height="6.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 7.2V5.4a2.7 2.7 0 0 1 5.4 0v1.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+    </button>
+    <button type="button" class="icon-btn" data-action="menu#toggle" data-menu-target="menuButton" title="<%= t("app.more") %>" aria-label="<%= t("app.more") %>" aria-expanded="false">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="3.5" r="1.1" fill="currentColor"/><circle cx="8" cy="8" r="1.1" fill="currentColor"/><circle cx="8" cy="12.5" r="1.1" fill="currentColor"/></svg>
+    </button>
+    <div class="mobile-menu" data-menu-target="menu" hidden>
+      <%= button_to lock_path, method: :post, class: "btn-io" do %>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.4" y="7.2" width="9.2" height="6.4" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M5.3 7.2V5.4a2.7 2.7 0 0 1 5.4 0v1.8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        <span><%= t("app.lock") %></span>
+      <% end %>
+      <%= render "shared/auto_lock_button" %>
+      <button type="button" class="btn-io" data-action="menu#close settings#open">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3.2v9.6M4.2 6.8h7.6" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="8" r="5.4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span><%= t("app.settings") %></span>
+      </button>
+      <%= render "shared/change_password_button" %>
+      <%= render "transfer" %>
+      <%= render "shared/sign_out" %>
+    </div>
+  </header>
+
+  <div class="spend-inner">
+    <nav class="spend-nav" aria-label="<%= t("titles.app") %>">
+      <%= link_to month_nav_path(@summary.prev_month), class: "icon-btn", aria: { label: t("app.previous_month") } do %>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M10.2 3.4 5.6 8l4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <% end %>
+      <h1><%= l(@summary.start_on, format: :month) %></h1>
+      <%= link_to month_nav_path(@summary.next_month), class: "icon-btn", aria: { label: t("app.next_month") } do %>
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.8 3.4 10.4 8l-4.6 4.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <% end %>
+      <%= link_to root_path, class: "text-btn today-btn" do %><%= t("app.today") %><% end %>
+    </nav>
+
+    <%= render "hero", summary: @summary %>
+
+    <div class="spend-layout">
+      <%= render "expenses", summary: @summary %>
+      <div class="spend-side">
+        <%= render "payment_days", summary: @summary %>
+        <%= render "subscriptions", summary: @summary %>
+      </div>
+    </div>
+  </div>
+
+  <button type="button" class="fab" data-action="composer#newExpense" aria-label="<%= t("app.add_expense") %>">
+    <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+  </button>
+
+  <%= render "dialogs", summary: @summary %>
+</div>
