@@ -666,6 +666,12 @@ input:focus, select:focus, textarea:focus {
   }
   .fab svg { width: 1.45rem; height: 1.45rem; display: block; }
   .confirm-dialog { margin-top: 12dvh; margin-bottom: auto; }
+  input[type="email"], input[type="password"], input[type="text"], input[type="search"],
+  input[type="url"], input[type="date"], input[type="time"], input[type="number"],
+  select, textarea {
+    min-height: 2.75rem;
+    font-size: 1.05rem;
+  }
   .theme-switch { width: min(14.5rem, 100%); padding: 0.28rem; }
   .theme-choice { height: 2.75rem; }
 }

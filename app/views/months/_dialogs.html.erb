@@ -54,11 +54,7 @@
       <input type="text" name="payment_day[title]" required maxlength="200" data-composer-target="payTitle" placeholder="<%= t("app.payment_day_placeholder") %>">
     </label>
     <label><%= t("app.due_day") %>
-      <select name="payment_day[due_day]" required data-composer-target="payDueDay">
-        <% (1..31).each do |day| %>
-          <option value="<%= day %>"><%= t("app.day_n", day: day) %></option>
-        <% end %>
-      </select>
+      <input type="number" name="payment_day[due_day]" min="1" max="31" step="1" required inputmode="numeric" pattern="[0-9]*" data-composer-target="payDueDay">
       <span class="field-hint"><%= t("app.payment_day_hint") %></span>
     </label>
     <label><%= t("app.notes") %>
