@@ -1,30 +1,38 @@
 # KuraSpend
 
-A quiet personal spend tracker as a Rails 8 PWA. One SQLite file, no Redis.
+**Know what is left after the month — without linking your bank.**
 
-Subscriptions, daily spend, payment-day reminders, and a monthly leftover after salary. Several people can have accounts on the same server. No bank sync. No live exchange rates.
+KuraSpend is a quiet personal spend tracker PWA. Subscriptions, daily expenses, payment-day reminders, and a monthly leftover after salary. Several people can have accounts on the same server. One SQLite file. No Redis. No bank sync. No live exchange rates pretending to be truth.
 
-## Local
+---
 
-```bash
-bin/setup
-bin/dev
-```
+## Philosophy
 
-Open http://127.0.0.1:3000
+Money apps usually want two things: deep access to your accounts, and a graph that makes you feel managed. KuraSpend wants neither.
 
-A `config/master.key` is created by `rails new` and is gitignored. Keep that file. If you cloned this repo and have no key:
+- **You type what matters.** Salary, rates, subscriptions, what you spent today. The numbers are yours because you entered them — not because a scraper guessed.
+- **Leftover is the point.** After standing subscriptions and daily spend, how much air is left this month? That question should not require OAuth with five banks.
+- **Currencies without cosplay.** Money is stored as integer cents. Totals use the home currency you pick (BRL, USD, or EUR) and the exchange rates **you** type. A missing rate leaves that row out of leftover instead of pretending 1:1.
+- **Reminders are not expenses.** Payment days (water, electricity, card) mark a day of the month. They do not change leftover until you log the amount when you actually pay.
+- **Past months stay honest.** Daily expenses are exact (they have a date). Subscriptions use the **current** standing amounts — if a price changed, an old month viewed today uses the new price. No fake historical rewrite.
+- **Same Kura calm.** Auth, idle lock, PWA, Compose on localhost. Finance data as a file you can back up.
 
-```bash
-rm -f config/credentials.yml.enc
-EDITOR=true bin/rails credentials:edit
-```
+Sister apps: [KuraNotes](https://github.com/aquaspy/KuraNotes), [KuraChat](https://github.com/aquaspy/KuraChat), [KuraHome](https://github.com/aquaspy/KuraHome), [KuraCalendar](https://github.com/aquaspy/KuraCalendar). Separate volume on purpose — spend data should not sit next to chat transcripts in one SQLite file.
 
-That writes a new `config/master.key`. Do not commit it.
+---
 
-## VPS (Docker Compose)
+## What you get
 
-On the server, with Docker installed:
+- Multi-user accounts on one instance
+- Subscriptions, daily expenses, payment-day reminders
+- Monthly leftover after salary (home currency + your rates)
+- JSON export / import (import adds; it does not overwrite salary or rates)
+- Offline: reopen months you already opened; edits wait until you are back
+- Sign-out wipes the offline cache
+
+---
+
+## Self-host (Docker Compose)
 
 ```bash
 git clone https://github.com/aquaspy/KuraSpend.git
@@ -32,14 +40,14 @@ cd KuraSpend
 cp .env.example .env
 ```
 
-Edit `.env`. At minimum set:
+Edit `.env`. At minimum:
 
 ```bash
-SECRET_KEY_BASE=$(openssl rand -hex 64)   # paste the output into .env
+SECRET_KEY_BASE=          # paste: openssl rand -hex 64
 KURA_HOST=spend.example.com
-SIGNUP_ENABLED=true                       # first account, then false
-FORCE_SSL=false                           # true once Caddy/nginx terminates HTTPS
-BIND=127.0.0.1:3004                       # 3004 if Notes/Chat/Home/Calendar already took 3000–3003
+SIGNUP_ENABLED=true       # first account, then false
+FORCE_SSL=false           # true once HTTPS terminates in front
+BIND=127.0.0.1:3004       # 3004 if Notes/Chat/Home/Calendar already took 3000–3003
 ```
 
 Then:
@@ -48,10 +56,10 @@ Then:
 docker compose up -d --build
 ```
 
-Create the first account in the browser (http://127.0.0.1:3004), **or** from the shell:
+Create the first account in the browser (`http://127.0.0.1:3004`), or:
 
 ```bash
-docker compose exec web bin/rails kura:create EMAIL=you@x.com PASSWORD='at-least-8'
+docker compose exec web bin/rails kura:create EMAIL=you@example.com PASSWORD='at-least-8'
 ```
 
 Lock signup:
@@ -62,47 +70,24 @@ SIGNUP_ENABLED=false
 docker compose up -d
 ```
 
-`docker compose restart` does **not** reload `.env`. Use `up -d`.
+> **Important:** `docker compose restart` does **not** reload `.env`. Use `docker compose up -d`.
 
-### Secret
+### Secrets
 
 Pick **one**. You do not need both.
 
-**Compose (recommended on a VPS):**
+| Approach | When | How |
+| --- | --- | --- |
+| **`SECRET_KEY_BASE`** (recommended) | Compose / VPS | `openssl rand -hex 64` → `.env` |
+| **`RAILS_MASTER_KEY`** | Rails credentials | Regenerate with `EDITOR=true bin/rails credentials:edit`, put `config/master.key` in `.env` |
 
-```bash
-openssl rand -hex 64
-```
+Losing the key does not lose spend data — only session cookies.
 
-Put the output in `.env` as `SECRET_KEY_BASE`. No `master.key` required.
+### Reverse proxy (Caddy or nginx)
 
-**Rails credentials** (if you already have a key, or want `rails credentials:edit`):
+Nothing is bundled. Point your proxy at `BIND`, set `FORCE_SSL=true`, then `docker compose up -d`.
 
-```bash
-rm -f config/credentials.yml.enc
-EDITOR=true bin/rails credentials:edit
-cat config/master.key
-```
-
-Put that value in `.env` as `RAILS_MASTER_KEY`. A random hex will not decrypt the `credentials.yml.enc` that ships in git — generate a new pair as above, or use `SECRET_KEY_BASE` instead.
-
-Losing the key does not lose spend data. It only invalidates session cookies. Generate a new one and users sign in again.
-
-### Users on the server
-
-```bash
-docker compose exec web bin/rails kura:users
-docker compose exec web bin/rails kura:create EMAIL=you@x.com PASSWORD='at-least-8'
-docker compose exec web bin/rails kura:password EMAIL=you@x.com PASSWORD='new-secret'
-```
-
-`kura:password` is the admin reset. There is no email recovery.
-
-### Proxy (Caddy or nginx)
-
-Nothing is bundled. The app listens on `127.0.0.1:3004` (or whatever you set in `BIND`) and does not bind 80/443. Point your own Caddy or nginx at that address, set `FORCE_SSL=true` in `.env`, then `docker compose up -d`.
-
-Caddy:
+**Caddy:**
 
 ```
 spend.example.com {
@@ -110,7 +95,7 @@ spend.example.com {
 }
 ```
 
-nginx:
+**nginx:**
 
 ```
 location / {
@@ -123,32 +108,88 @@ location / {
 
 If `BIND` is another port, proxy to that port instead.
 
+### Users on the server
+
+No email recovery:
+
+```bash
+docker compose exec web bin/rails kura:users
+docker compose exec web bin/rails kura:create EMAIL=you@example.com PASSWORD='at-least-8'
+docker compose exec web bin/rails kura:password EMAIL=you@example.com PASSWORD='new-secret'
+```
+
 ### Backup
 
-Spend data lives in the `kura_spend_data` volume (`storage/production.sqlite3`). Back that up.
+Spend data lives in the `kura_spend_data` volume (`storage/production.sqlite3`).
 
 ```bash
 docker compose exec web tar -C /rails/storage -cf - . > kuraspend-backup.tar
 ```
 
-Offline, the PWA can reopen months you already opened while online. Adding or editing waits until you are back. Sign out wipes the cache so a second person on the same browser cannot read the previous user’s spend offline.
+### Shared browsers
 
-Shared browsers: Sign out **and** wait for the cache wipe.
+Sign out **and** wait for the cache wipe.
 
-Export downloads a JSON file of subscriptions, payment days, and expenses. Import accepts that same JSON. It does not replace existing rows; it adds them. It does not overwrite salary or rates.
+---
 
-Money is stored as integer cents. Totals use the home currency you pick (BRL, USD, or EUR) and the exchange rates you type. There is no live quote. A missing rate leaves that row out of leftover instead of pretending 1:1.
+## Import / export
 
-Past months: daily expenses are exact (they have a date). Subscriptions use the **current** standing amounts — if a price changed, an old month viewed today uses the new price.
+**Export** downloads JSON of subscriptions, payment days, and expenses.
 
-Payment days are reminders of a day of the month (water, electricity, card). They do not change leftover. Log the amount as an expense when you pay.
+**Import** accepts that same JSON. It **adds** rows; it does not replace existing ones, and it does **not** overwrite salary or rates.
 
-## Keys
+---
 
-| Env | What |
+## How money works (short)
+
+| Idea | Behavior |
+| --- | --- |
+| Storage | Integer cents |
+| Home currency | BRL, USD, or EUR — you pick |
+| Exchange rates | You type them; no live quote |
+| Missing rate | That row is left out of leftover (not assumed 1:1) |
+| Payment days | Reminders only — log an expense when you pay |
+| Past months | Expenses are dated; subscriptions use **current** amounts |
+
+---
+
+## Local development
+
+```bash
+bin/setup
+bin/dev
+```
+
+Open http://127.0.0.1:3000
+
+If you cloned without a `master.key`:
+
+```bash
+rm -f config/credentials.yml.enc
+EDITOR=true bin/rails credentials:edit
+```
+
+Do not commit `config/master.key`.
+
+---
+
+## Environment
+
+| Variable | What it does |
 | --- | --- |
 | `SECRET_KEY_BASE` | Session cookies (Compose). `openssl rand -hex 64` |
-| `SIGNUP_ENABLED` | Public signup form. Turn off after the first account |
+| `SIGNUP_ENABLED` | Public signup. Turn off after the first account |
 | `FORCE_SSL` | `true` when Caddy/nginx terminates HTTPS |
 | `KURA_HOST` | Public hostname |
 | `BIND` | Default `127.0.0.1:3004` |
+
+---
+
+## Sister apps
+
+| App | Role |
+| --- | --- |
+| [KuraNotes](https://github.com/aquaspy/KuraNotes) | Private notes |
+| [KuraChat](https://github.com/aquaspy/KuraChat) | Private chat with Grok |
+| [KuraHome](https://github.com/aquaspy/KuraHome) | Quiet start-page / homepage |
+| [KuraCalendar](https://github.com/aquaspy/KuraCalendar) | Personal calendar & birthdays |
