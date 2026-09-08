@@ -4,7 +4,7 @@
 <% if notice %><p class="flash flash-notice" role="status"><%= notice %></p><% end %>
 <% if alert %><p class="flash flash-alert" role="alert"><%= alert %></p><% end %>
 
-<div class="spend" data-controller="composer confirm menu lock offline settings" data-lock-enabled-value="<%= current_user.auto_lock? %>">
+<div class="spend" data-controller="composer confirm menu lock offline settings" data-lock-enabled-value="<%= auto_lock_enabled? %>" data-lock-on-label-value="<%= t("app.auto_lock_on") %>" data-lock-off-label-value="<%= t("app.auto_lock_off") %>">
   <p class="offline-banner" data-offline-target="banner" hidden><%= t("app.offline") %></p>
   <% if @summary.missing_rate_currencies.any? %>
     <p class="offline-banner fx-banner" role="status"><%= t("app.missing_rates", codes: @summary.missing_rate_currencies.join(", ")) %></p>

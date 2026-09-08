@@ -15,7 +15,7 @@ Money apps usually want two things: deep access to your accounts, and a graph th
 - **Currencies without cosplay.** Money is stored as integer cents. Totals use the home currency you pick (BRL, USD, or EUR) and the exchange rates **you** type. A missing rate leaves that row out of leftover instead of pretending 1:1.
 - **Reminders are not expenses.** Payment days (water, electricity, card) mark a day of the month. They do not change leftover until you log the amount when you actually pay.
 - **Past months stay honest.** Daily expenses are exact (they have a date). Subscriptions use the **current** standing amounts — if a price changed, an old month viewed today uses the new price. No fake historical rewrite.
-- **Same Kura calm.** Auth, idle lock, PWA, Compose on localhost. Finance data as a file you can back up.
+- **Same Kura calm.** Auth, idle lock (per device), PWA, Compose on localhost. Finance data as a file you can back up.
 
 Sister apps: [KuraNotes](https://github.com/aquaspy/KuraNotes), [KuraChat](https://github.com/aquaspy/KuraChat), [KuraHome](https://github.com/aquaspy/KuraHome), [KuraCalendar](https://github.com/aquaspy/KuraCalendar). Separate volume on purpose — spend data should not sit next to chat transcripts in one SQLite file.
 
