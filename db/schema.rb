@@ -10,7 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_07_193000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_19_120000) do
+  create_table "api_tokens", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "last_used_at"
+    t.string "name", null: false
+    t.string "prefix", null: false
+    t.string "token_digest", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["token_digest"], name: "index_api_tokens_on_token_digest", unique: true
+    t.index ["user_id"], name: "index_api_tokens_on_user_id"
+  end
+
   create_table "expenses", force: :cascade do |t|
     t.integer "amount_cents", null: false
     t.string "category", default: "", null: false
@@ -65,6 +77,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_07_193000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "api_tokens", "users"
   add_foreign_key "expenses", "users"
   add_foreign_key "payment_days", "users"
   add_foreign_key "subscriptions", "users"

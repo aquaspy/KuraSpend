@@ -27,6 +27,7 @@ Sister apps: [KuraNotes](https://github.com/aquaspy/KuraNotes), [KuraChat](https
 - Subscriptions, daily expenses, payment-day reminders
 - Monthly leftover after salary (home currency + your rates)
 - JSON export / import (import adds; it does not overwrite salary or rates)
+- API tokens + JSON API for AI agents (see API.md)
 - Offline: reopen months you already opened; edits wait until you are back
 - Sign-out wipes the offline cache
 
@@ -143,6 +144,12 @@ YJIT stays **on**. Rails 8.1 enables it in production via `config.yjit`; the ima
 **Export** downloads JSON of subscriptions, payment days, and expenses.
 
 **Import** accepts that same JSON. It **adds** rows; it does not replace existing ones, and it does **not** overwrite salary or rates.
+
+---
+
+## AI agents (API)
+
+KuraSpend is ready for the agentic era: mint a token under **More → API tokens**, hand it to OpenClaw, Hermes Agent, or any HTTP client, and it can log expenses into the right category and review months — even while the app is locked. Salary, rates, and settings stay manual. See [API.md](API.md) for endpoints, curl examples, and a setup snippet.
 
 ---
 

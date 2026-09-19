@@ -27,6 +27,14 @@ class Expense < ApplicationRecord
     }
   end
 
+  def as_api
+    as_export.merge(
+      "id" => id,
+      "created_at" => created_at&.iso8601,
+      "updated_at" => updated_at&.iso8601
+    )
+  end
+
   private
     def normalize
       self.title = title.to_s.strip

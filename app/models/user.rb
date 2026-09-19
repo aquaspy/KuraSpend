@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :subscriptions, dependent: :destroy
   has_many :payment_days, dependent: :destroy
   has_many :expenses, dependent: :destroy
+  has_many :api_tokens, dependent: :destroy
 
   normalizes :email, with: -> { it.strip.downcase }
 

@@ -13,6 +13,17 @@ Rails.application.routes.draw do
   post "unlock", to: "locks#create"
   post "lock", to: "locks#lock", as: :lock
   resource :password, only: %i[edit update]
+  resources :api_tokens, only: %i[index create destroy]
+
+  namespace :api do
+    namespace :v1 do
+      resources :expenses, only: %i[index show create update destroy]
+      resources :subscriptions, only: %i[index show create update destroy]
+      resources :payment_days, only: %i[index show create update destroy]
+      get "months/:year/:month", to: "months#show", as: :month,
+        constraints: { year: /\d{4}/, month: /\d{1,2}/ }
+    end
+  end
 
   get  "export", to: "months#export", as: :export
   post "import", to: "months#import", as: :import
