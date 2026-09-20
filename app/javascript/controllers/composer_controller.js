@@ -1,5 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
+const DRAFT_PREFIX = "kuraspend_draft_"
+
 export default class extends Controller {
   static targets = [
     "expenseBox", "expenseForm", "expenseHeading", "expenseMethod", "expenseDelete",
@@ -67,6 +69,54 @@ export default class extends Controller {
     this.subBillingWrapTarget.hidden = this.subIntervalTarget.value !== "yearly"
   }
 
+  store(event) {
+    const form = event.target.closest("form")
+    if (!form) return
+    const key = this.draftKey(form)
+    if (!key) return
+    const data = {}
+    for (const el of form.elements) {
+      if (!el.name || el.type === "hidden" || el.type === "submit" || el.type === "button") continue
+      data[el.name] = el.type === "checkbox" ? el.checked : el.value
+    }
+    try { window.localStorage.setItem(key, JSON.stringify(data)) } catch {}
+  }
+
+  submitted(event) {
+    if (event.detail?.success === false) return
+    const form = event.target.closest ? event.target.closest("form") : null
+    if (!form) return
+    const key = this.draftKey(form)
+    if (!key) return
+    try { window.localStorage.removeItem(key) } catch {}
+  }
+
+  restoreInto(form) {
+    const key = this.draftKey(form)
+    if (!key) return
+    let draft
+    try {
+      draft = JSON.parse(window.localStorage.getItem(key) || "null")
+    } catch {
+      return
+    }
+    if (!draft || typeof draft !== "object") return
+    for (const el of form.elements) {
+      if (!el.name || draft[el.name] === undefined) continue
+      if (el.type === "hidden" || el.type === "submit" || el.type === "button") continue
+      if (el.type === "checkbox") {
+        el.checked = draft[el.name] === true
+      } else if (typeof draft[el.name] === "string") {
+        el.value = draft[el.name]
+      }
+    }
+  }
+
+  draftKey(form) {
+    const match = form.action.match(/\/([a-z_]+)(?:\/(\d+))?(?:\?.*)?$/)
+    return match ? `${DRAFT_PREFIX}${match[1]}_${match[2] || "new"}` : null
+  }
+
   fillExpense(trigger, { create } = {}) {
     const data = trigger?.dataset || {}
     const id = create ? null : data.id
@@ -79,6 +129,7 @@ export default class extends Controller {
     this.expenseSpentOnTarget.value = data.spentOn || this.defaultExpenseDate()
     this.expenseCategoryTarget.value = data.category || ""
     this.expenseNotesTarget.value = data.notes || ""
+    this.restoreInto(this.expenseFormTarget)
     if (this.hasExpenseDeleteTarget) {
       this.expenseDeleteTarget.hidden = !id
       this.expenseDeleteTarget.dataset.url = id ? `/expenses/${id}` : ""
@@ -94,6 +145,7 @@ export default class extends Controller {
     this.payTitleTarget.value = data.title || ""
     this.payDueDayTarget.value = data.dueDay || String(new Date().getDate())
     this.payNotesTarget.value = data.notes || ""
+    this.restoreInto(this.payFormTarget)
     if (this.hasPayDeleteTarget) {
       this.payDeleteTarget.hidden = !id
       this.payDeleteTarget.dataset.url = id ? `/payment_days/${id}` : ""
@@ -113,6 +165,7 @@ export default class extends Controller {
     this.subBillingMonthTarget.value = data.billingMonth || "1"
     this.subDueDayTarget.value = data.dueDay || ""
     this.subNotesTarget.value = data.notes || ""
+    this.restoreInto(this.subFormTarget)
     this.toggleInterval()
     if (this.hasSubDeleteTarget) {
       this.subDeleteTarget.hidden = !id

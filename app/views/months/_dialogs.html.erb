@@ -2,7 +2,7 @@
 
 <dialog class="confirm-dialog form-dialog" data-composer-target="expenseBox" data-action="click->composer#backdrop">
   <p class="dialog-heading" data-composer-target="expenseHeading"><%= t("app.new_expense") %></p>
-  <%= form_with url: expenses_path, class: "auth-form", data: { composer_target: "expenseForm" } do %>
+  <%= form_with url: expenses_path, class: "auth-form", data: { composer_target: "expenseForm", action: "input->composer#store turbo:submit-end->composer#submitted" } do %>
     <input type="hidden" name="_method" value="post" data-composer-target="expenseMethod">
     <%= hidden_field_tag :year, summary.year %>
     <%= hidden_field_tag :month, summary.month %>
@@ -46,7 +46,7 @@
 
 <dialog class="confirm-dialog form-dialog" data-composer-target="payBox" data-action="click->composer#backdrop">
   <p class="dialog-heading" data-composer-target="payHeading"><%= t("app.new_payment_day") %></p>
-  <%= form_with url: payment_days_path, class: "auth-form", data: { composer_target: "payForm" } do %>
+  <%= form_with url: payment_days_path, class: "auth-form", data: { composer_target: "payForm", action: "input->composer#store turbo:submit-end->composer#submitted" } do %>
     <input type="hidden" name="_method" value="post" data-composer-target="payMethod">
     <%= hidden_field_tag :year, summary.year %>
     <%= hidden_field_tag :month, summary.month %>
@@ -70,7 +70,7 @@
 
 <dialog class="confirm-dialog form-dialog" data-composer-target="subBox" data-action="click->composer#backdrop">
   <p class="dialog-heading" data-composer-target="subHeading"><%= t("app.new_subscription") %></p>
-  <%= form_with url: subscriptions_path, class: "auth-form", data: { composer_target: "subForm" } do %>
+  <%= form_with url: subscriptions_path, class: "auth-form", data: { composer_target: "subForm", action: "input->composer#store turbo:submit-end->composer#submitted" } do %>
     <input type="hidden" name="_method" value="post" data-composer-target="subMethod">
     <%= hidden_field_tag :year, summary.year %>
     <%= hidden_field_tag :month, summary.month %>
